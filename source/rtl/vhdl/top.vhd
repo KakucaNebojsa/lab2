@@ -102,7 +102,7 @@ architecture rtl of top is
       blue_o              : out std_logic_vector(7 downto 0)
     );
   end component;
-  
+    
   component ODDR2
   generic(
    DDR_ALIGNMENT : string := "NONE";
@@ -120,6 +120,7 @@ architecture rtl of top is
     S           : in  std_ulogic := 'L'
   );
   end component;
+  
   
   
   constant update_period     : std_logic_vector(31 downto 0) := conv_std_logic_vector(1, 32);
@@ -169,7 +170,7 @@ begin
   
   -- removed to inputs pin
   direct_mode <= '0';
-  display_mode     <= "10";  -- 01 - text mode, 10 - graphics mode, 11 - text & graphics
+  display_mode     <= "01";  -- 01 - text mode, 10 - graphics mode, 11 - text & graphics
   
   font_size        <= x"1";
   show_frame       <= '0';
@@ -285,10 +286,10 @@ begin
 	
 	process(pix_clock_s, reset_n_i)
 	begin
-		if reset_n_i = '0' then
+		if (reset_n_i = '0') then
 			char_address <= (others=>'0');
-		elsif rising_edge(pix_clock_s) then
-			if(char_address="01001011000000") then
+		elsif (pix_clock_s' event and pix_clock_s='1') then
+			if(char_address=4800) then
 				char_address<=(others=>'0');
 			else
 				char_address<=char_address+'1';
@@ -297,21 +298,21 @@ begin
 	end process;
 	
 	  
-	char_value<= "001110" when char_address=1 else
-					 "000101" when char_address=2 else
-					 "000010" when char_address=3 else
-					 "001111" when char_address=4 else
-					 "001010" when char_address=5 else
-					 "010011" when char_address=6 else
-					 "000001" when char_address=7 else
-					 "100000" when char_address=8 else
-					 "001011" when char_address=9 else
-					 "000001" when char_address=10 else
-					 "001011" when char_address=11 else
-					 "010101" when char_address=12 else
-					 "000011" when char_address=13 else
-					 "000001" when char_address=14 else
-					 "100000";
+	char_value<= "001110" when char_address=1 else	--N
+					 "000101" when char_address=2 else	--E
+					 "000010" when char_address=3 else	--B
+					 "001111" when char_address=4 else	--O
+					 "001010" when char_address=5 else	--J	
+					 "010011" when char_address=6 else	--S
+					 "000001" when char_address=7 else	--A
+					 "100000" when char_address=8 else	--
+					 "001011" when char_address=9 else	--K
+					 "000001" when char_address=10 else	--A
+					 "001011" when char_address=11 else	--K
+					 "010101" when char_address=12 else	--U
+					 "000011" when char_address=13 else	--C
+					 "000001" when char_address=14 else	--A
+					 "100000";									--
 					 
   -- koristeci signale realizovati logiku koja pise po GRAPH_MEM
   --pixel_address
